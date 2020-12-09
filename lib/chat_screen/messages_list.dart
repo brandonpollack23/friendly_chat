@@ -41,14 +41,18 @@ class _MessagesListState extends State<MessagesList>
   }
 
   void insertNewMessages(List<String> newMessages) {
-    for (int i = 0; i < newMessages.length - _chatMessages.length; i++) {
-      var message = ChatMessage(
-        text: newMessages[i],
-        animationController: AnimationController(
-            duration: Duration(milliseconds: 700), vsync: this),
-      );
-      _chatMessages.insert(0, message);
-    }
+    final initialLength = _chatMessages.length;
+    final newChatMessages = newMessages
+        .getRange(0, newMessages.length - initialLength)
+        .map((e) => ChatMessage(
+              text: e,
+              animationController: AnimationController(
+                duration: Duration(milliseconds: 700),
+                vsync: this,
+              ),
+            ));
+
+    _chatMessages.insertAll(0, newChatMessages);
   }
 
   void beginAnimationOfNewestMessage() {
