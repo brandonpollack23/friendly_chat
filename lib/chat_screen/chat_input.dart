@@ -1,12 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'chat_message.dart';
+import 'package:friendly_chat/blocs/chat_messages_bloc.dart';
+import 'package:friendly_chat/chat_screen/chat_screen.dart';
 
 class ChatInput extends StatefulWidget {
-  ChatInput(this.handleMessageSent);
-
-  final Function handleMessageSent;
   final _textController = TextEditingController();
   final _focusNode = FocusNode();
 
@@ -14,11 +11,15 @@ class ChatInput extends StatefulWidget {
   _ChatInputState createState() => _ChatInputState();
 }
 
-class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
+class _ChatInputState extends State<ChatInput> {
   bool _isComposing = false;
+
+  ChatMessagesBloc _chatMessagesBloc;
 
   @override
   Widget build(BuildContext context) {
+    _chatMessagesBloc = ChatMessagesProvider.of(context).messagesBloc;
+
     return Container(
       decoration: BoxDecoration(color: Theme.of(context).cardColor),
       child: Container(
@@ -67,19 +68,12 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     widget._textController.clear();
 
     // TODO RX this would be the Stream to the BLoC in Rx, lets try that and then StreamBuilder
-    final message = ChatMessage(
-        text: text,
-        animationController: AnimationController(
-            duration: Duration(milliseconds: 700), vsync: this));
-
-    widget.handleMessageSent(message);
+    _chatMessagesBloc.addMessage.add(text);
 
     setState(() {
       _isComposing = false;
     });
 
     widget._focusNode.requestFocus();
-
-    message.animationController.forward();
   }
 }
