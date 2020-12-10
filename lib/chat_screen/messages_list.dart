@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:friendly_chat/blocs/chat_messages_bloc.dart';
+import 'package:friendly_chat/entities/message.dart';
 import 'package:provider/provider.dart';
 
 import 'chat_message.dart';
@@ -18,7 +19,7 @@ class _MessagesListState extends State<MessagesList>
     return Flexible(
         child: Consumer<ChatMessagesBloc>(
       builder: (context, chatMessagesBloc, child) =>
-          StreamBuilder<List<String>>(
+          StreamBuilder<List<Message>>(
         stream: chatMessagesBloc.messages,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -39,16 +40,15 @@ class _MessagesListState extends State<MessagesList>
     ));
   }
 
-  void insertNewMessages(List<String> newMessages) {
+  void insertNewMessages(List<Message> newMessages) {
     if (newMessages.isEmpty) return;
 
     final initialLength = _chatMessages.length;
     final newChatMessages = newMessages
         .getRange(0, newMessages.length - initialLength)
-        .map((e) => ChatMessage(
-              text: e,
-              // TODO get this from model in bloc
-              name: 'Brandon Pollack',
+        .map((message) => ChatMessage(
+              text: message.text,
+              name: message.user.asLocaleFormattedString(),
               animationController: AnimationController(
                 duration: Duration(milliseconds: 700),
                 vsync: this,

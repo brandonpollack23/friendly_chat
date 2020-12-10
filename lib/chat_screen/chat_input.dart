@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:friendly_chat/blocs/chat_messages_bloc.dart';
+import 'package:friendly_chat/entities/message.dart';
+import 'package:friendly_chat/entities/user.dart';
 import 'package:provider/provider.dart';
 
 class ChatInput extends StatefulWidget {
@@ -16,6 +18,12 @@ class ChatInput extends StatefulWidget {
 class _ChatInputState extends State<ChatInput> {
   final _textController = TextEditingController();
   final _focusNode = FocusNode();
+
+  // TODO don't hard code, get from initState fetch from interface(configuration/db)
+  final _user = User(
+    firstName: "Brandon",
+    lastName: "Pollack",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +41,7 @@ class _ChatInputState extends State<ChatInput> {
                 textInputAction: TextInputAction.send,
                 controller: _textController,
                 onSubmitted: (value) =>
-                    _handleSubmitted(chatMessagesBloc, value),
+                    _handleSubmitted(chatMessagesBloc, _user, value),
                 onChanged: (_) => chatMessagesBloc.composing.add(true),
                 decoration:
                     InputDecoration.collapsed(hintText: widget.hintText),
@@ -63,23 +71,31 @@ class _ChatInputState extends State<ChatInput> {
         ? CupertinoButton(
             child: Text('Send'),
             onPressed: isComposing
-                ? () => _handleSubmitted(chatMessagesBloc, _textController.text)
+                ? () => _handleSubmitted(
+                    chatMessagesBloc, _user, _textController.text)
                 : null,
           )
         : IconButton(
             icon: Icon(Icons.send),
             onPressed: isComposing
-                ? () => _handleSubmitted(chatMessagesBloc, _textController.text)
+                ? () => _handleSubmitted(
+                    chatMessagesBloc, _user, _textController.text)
                 : null,
           );
   }
 
-  void _handleSubmitted(ChatMessagesBloc chatMessagesBloc, String text) {
+  void _handleSubmitted(
+      ChatMessagesBloc chatMessagesBloc, User user, String text) {
     // Clear text in box.
     _textController.clear();
 
     // Notify message has been created.
-    chatMessagesBloc.addMessage.add(text);
+    chatMessagesBloc.addMessage.add(
+      Message(
+        user: user,
+        text: text,
+      ),
+    );
 
     // Notify no longer composing message.
     chatMessagesBloc.composing.add(false);
