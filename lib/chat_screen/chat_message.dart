@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 
 class ChatMessage extends StatelessWidget {
-  ChatMessage({this.text, this.animationController});
+  ChatMessage({
+    @required this.text,
+    this.name = 'Unknown User',
+    this.animationController,
+  });
 
   final String text;
+  final String name;
   final AnimationController animationController;
-
-  // TODO don't hard code this, pass it as state and get it from the Auth/User service.
-  final String _name = 'Brandon Pollack';
 
   @override
   Widget build(BuildContext context) {
+    // TODO pull all animation info up to creator.
     return SizeTransition(
       sizeFactor:
           CurvedAnimation(parent: animationController, curve: Curves.easeOut),
@@ -30,7 +33,7 @@ class ChatMessage extends StatelessWidget {
 
   Container get _chatAvatar => Container(
       margin: EdgeInsets.only(right: 16.0),
-      child: CircleAvatar(child: Text(_name[0])));
+      child: CircleAvatar(child: Text(name[0])));
 
   Widget _buildChatNameMessage(BuildContext context) {
     final messageStyle = TextStyle(fontSize: 16.0);
@@ -38,7 +41,7 @@ class ChatMessage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_name, style: Theme.of(context).textTheme.headline6),
+          Text(name, style: Theme.of(context).textTheme.headline6),
           Container(
             margin: EdgeInsets.only(top: 5.0),
             child: Text(text, style: messageStyle),

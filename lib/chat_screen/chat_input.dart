@@ -1,18 +1,21 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:friendly_chat/blocs/chat_messages_bloc.dart';
 import 'package:friendly_chat/chat_screen/chat_screen.dart';
 
 class ChatInput extends StatefulWidget {
-  final _textController = TextEditingController();
-  final _focusNode = FocusNode();
+  final hintText;
+
+  ChatInput({this.hintText = 'Send a message'});
 
   @override
   _ChatInputState createState() => _ChatInputState();
 }
 
 class _ChatInputState extends State<ChatInput> {
-  bool _isComposing = false;
+  final _textController = TextEditingController();
+  final _focusNode = FocusNode();
 
   ChatMessagesBloc _chatMessagesBloc;
 
@@ -29,34 +32,39 @@ class _ChatInputState extends State<ChatInput> {
             Flexible(
               child: TextField(
                 maxLines: null,
-                controller: widget._textController,
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.send,
+                controller: _textController,
                 onSubmitted: _handleSubmitted,
-                onChanged: (String text) {
-                  setState(() {
-                    _isComposing = text.length > 0;
-                  });
-                },
+                onChanged: (_) => _chatMessagesBloc.composing.add(true),
                 decoration:
-                    InputDecoration.collapsed(hintText: 'Send a message'),
-                focusNode: widget._focusNode,
+                    InputDecoration.collapsed(hintText: widget.hintText),
+                focusNode: _focusNode,
               ),
             ),
+            // TODO fix stream already listened to on hot reload.
             Container(
               margin: EdgeInsets.symmetric(horizontal: 4.0),
               // TODO Theming, we'd use a provider or another library to abstract this selection away IRL.
-              child: Theme.of(context).platform == TargetPlatform.iOS
-                  ? CupertinoButton(
-                      child: Text('Send'),
-                      onPressed: _isComposing
-                          ? () => _handleSubmitted(widget._textController.text)
-                          : null,
-                    )
-                  : IconButton(
-                      icon: Icon(Icons.send),
-                      onPressed: _isComposing
-                          ? () => _handleSubmitted(widget._textController.text)
-                          : null,
-                    ),
+              child: StreamBuilder(
+                stream: _chatMessagesBloc.isComposing,
+                builder: (context, snapshot) {
+                  bool isComposing = snapshot.hasData && snapshot.data;
+                  return Theme.of(context).platform == TargetPlatform.iOS
+                      ? CupertinoButton(
+                          child: Text('Send'),
+                          onPressed: isComposing
+                              ? () => _handleSubmitted(_textController.text)
+                              : null,
+                        )
+                      : IconButton(
+                          icon: Icon(Icons.send),
+                          onPressed: isComposing
+                              ? () => _handleSubmitted(_textController.text)
+                              : null,
+                        );
+                },
+              ),
             )
           ],
         ),
@@ -65,15 +73,15 @@ class _ChatInputState extends State<ChatInput> {
   }
 
   void _handleSubmitted(String text) {
-    widget._textController.clear();
+    // Clear text in box.
+    _textController.clear();
 
-    // TODO RX this would be the Stream to the BLoC in Rx, lets try that and then StreamBuilder
+    // Notify message has been created.
     _chatMessagesBloc.addMessage.add(text);
 
-    setState(() {
-      _isComposing = false;
-    });
+    // Notify no longer composing message.
+    _chatMessagesBloc.composing.add(false);
 
-    widget._focusNode.requestFocus();
+    _focusNode.requestFocus();
   }
 }

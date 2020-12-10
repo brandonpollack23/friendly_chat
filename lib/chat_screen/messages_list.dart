@@ -18,7 +18,6 @@ class _MessagesListState extends State<MessagesList>
         ChatMessagesProvider.of(context).messagesBloc.messages;
 
     return Flexible(
-      // TODO BONUS make infinite and fetching as scroll
       child: StreamBuilder<List<String>>(
         stream: messages,
         builder: (context, snapshot) {
@@ -46,6 +45,8 @@ class _MessagesListState extends State<MessagesList>
         .getRange(0, newMessages.length - initialLength)
         .map((e) => ChatMessage(
               text: e,
+              // TODO get this from model in bloc
+              name: 'Brandon Pollack',
               animationController: AnimationController(
                 duration: Duration(milliseconds: 700),
                 vsync: this,
