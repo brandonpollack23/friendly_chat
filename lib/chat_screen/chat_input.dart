@@ -48,28 +48,30 @@ class _ChatInputState extends State<ChatInput> {
               // TODO Theming, we'd use a provider or another library to abstract this selection away IRL.
               child: StreamBuilder(
                 stream: _chatMessagesBloc.isComposing,
-                builder: (context, snapshot) {
-                  bool isComposing = snapshot.hasData && snapshot.data;
-                  return Theme.of(context).platform == TargetPlatform.iOS
-                      ? CupertinoButton(
-                          child: Text('Send'),
-                          onPressed: isComposing
-                              ? () => _handleSubmitted(_textController.text)
-                              : null,
-                        )
-                      : IconButton(
-                          icon: Icon(Icons.send),
-                          onPressed: isComposing
-                              ? () => _handleSubmitted(_textController.text)
-                              : null,
-                        );
-                },
+                builder: _buildSendButton,
               ),
             )
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildSendButton(context, snapshot) {
+    bool isComposing = snapshot.hasData && snapshot.data;
+    return Theme.of(context).platform == TargetPlatform.iOS
+        ? CupertinoButton(
+            child: Text('Send'),
+            onPressed: isComposing
+                ? () => _handleSubmitted(_textController.text)
+                : null,
+          )
+        : IconButton(
+            icon: Icon(Icons.send),
+            onPressed: isComposing
+                ? () => _handleSubmitted(_textController.text)
+                : null,
+          );
   }
 
   void _handleSubmitted(String text) {

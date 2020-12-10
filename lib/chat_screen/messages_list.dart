@@ -40,6 +40,8 @@ class _MessagesListState extends State<MessagesList>
   }
 
   void insertNewMessages(List<String> newMessages) {
+    if (newMessages.isEmpty) return;
+
     final initialLength = _chatMessages.length;
     final newChatMessages = newMessages
         .getRange(0, newMessages.length - initialLength)

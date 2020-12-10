@@ -17,7 +17,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   ChatMessagesProvider _chatMessagesProvider;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     _chatMessagesProvider = ChatMessagesProvider(
       messagesBloc: ChatMessagesBloc(),
       child: Column(
@@ -29,6 +29,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       ),
     );
 
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('FriendlyChat Scaffold Appbar'),

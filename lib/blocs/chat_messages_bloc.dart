@@ -1,18 +1,21 @@
 import 'dart:async';
 
+import 'package:rxdart/rxdart.dart';
+
 // TODO without rxdart what to use instead of BehaviorSubject?
 
 class ChatMessagesBloc {
   // TODO instead of messages use Entity class that contains user and message.
   final _messages = <String>[];
 
-  final _addMessageController = StreamController<String>();
+  final _addMessageController = StreamController<String>.broadcast();
   Sink<String> get addMessage => _addMessageController.sink;
 
-  final _messagesController = StreamController<List<String>>();
+  // BehaviourSubject aka ReplayStream.  A broadcast stream that saves and resends its latest value to listeners.
+  final _messagesController = BehaviorSubject<List<String>>();
   Stream<List<String>> get messages => _messagesController.stream;
 
-  final _composingController = StreamController<bool>();
+  final _composingController = BehaviorSubject<bool>();
   Stream<bool> get isComposing => _composingController.stream.distinct();
   Sink<bool> get composing => _composingController.sink;
 

@@ -32,3 +32,9 @@ final ThemeData kDefaultTheme = ThemeData(
   primarySwatch: Colors.purple,
   accentColor: Colors.orangeAccent[400],
 );
+
+// TODO high level tasks:
+// 1. Better state managment: maybe use BlocDev
+// 2. DI (maybe replace InheritedWidget)
+// 3. Listening on wifi (specific port for now) and pushing messages from other users
+// 4. Actually selectable chat rooms on the local network
