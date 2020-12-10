@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:friendly_chat/blocs/chat_messages_bloc.dart';
+import 'package:provider/provider.dart';
 
 import 'chat_input.dart';
 import 'messages_list.dart';
@@ -14,24 +15,6 @@ class ChatScreen extends StatefulWidget {
 
 // TODO seperate this mixin?
 class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
-  ChatMessagesProvider _chatMessagesProvider;
-
-  @override
-  void initState() {
-    _chatMessagesProvider = ChatMessagesProvider(
-      messagesBloc: ChatMessagesBloc(),
-      child: Column(
-        children: [
-          MessagesList(),
-          Divider(height: 1.0),
-          ChatInput(),
-        ],
-      ),
-    );
-
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,31 +22,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         title: Text('FriendlyChat Scaffold Appbar'),
         elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
       ),
-      body: _chatMessagesProvider,
+      body: Provider(
+        create: (context) => ChatMessagesBloc(),
+        child: Column(
+          children: [
+            MessagesList(),
+            Divider(height: 1.0),
+            ChatInput(),
+          ],
+        ),
+      ),
     );
-  }
-
-  @override
-  void dispose() {
-    _chatMessagesProvider.dispose();
-    super.dispose();
-  }
-}
-
-class ChatMessagesProvider extends InheritedWidget {
-  final ChatMessagesBloc messagesBloc;
-
-  ChatMessagesProvider({@required this.messagesBloc, Widget child})
-      : super(child: child);
-
-  static ChatMessagesProvider of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<ChatMessagesProvider>();
-  }
-
-  @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
-
-  void dispose() {
-    messagesBloc.dispose();
   }
 }

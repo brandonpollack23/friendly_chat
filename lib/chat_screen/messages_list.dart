@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:friendly_chat/chat_screen/chat_screen.dart';
+import 'package:friendly_chat/blocs/chat_messages_bloc.dart';
+import 'package:provider/provider.dart';
 
 import 'chat_message.dart';
 
@@ -14,12 +15,11 @@ class _MessagesListState extends State<MessagesList>
 
   @override
   Widget build(BuildContext context) {
-    Stream<List<String>> messages =
-        ChatMessagesProvider.of(context).messagesBloc.messages;
-
     return Flexible(
-      child: StreamBuilder<List<String>>(
-        stream: messages,
+        child: Consumer<ChatMessagesBloc>(
+      builder: (context, chatMessagesBloc, child) =>
+          StreamBuilder<List<String>>(
+        stream: chatMessagesBloc.messages,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return CircularProgressIndicator();
@@ -36,7 +36,7 @@ class _MessagesListState extends State<MessagesList>
           );
         },
       ),
-    );
+    ));
   }
 
   void insertNewMessages(List<String> newMessages) {

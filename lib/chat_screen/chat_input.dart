@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:friendly_chat/blocs/chat_messages_bloc.dart';
-import 'package:friendly_chat/chat_screen/chat_screen.dart';
+import 'package:provider/provider.dart';
 
 class ChatInput extends StatefulWidget {
   final hintText;
@@ -17,12 +17,8 @@ class _ChatInputState extends State<ChatInput> {
   final _textController = TextEditingController();
   final _focusNode = FocusNode();
 
-  ChatMessagesBloc _chatMessagesBloc;
-
   @override
   Widget build(BuildContext context) {
-    _chatMessagesBloc = ChatMessagesProvider.of(context).messagesBloc;
-
     return Container(
       decoration: BoxDecoration(color: Theme.of(context).cardColor),
       child: Container(
@@ -30,25 +26,29 @@ class _ChatInputState extends State<ChatInput> {
         child: Row(
           children: [
             Flexible(
-              child: TextField(
+                child: Consumer<ChatMessagesBloc>(
+              builder: (context, chatMessagesBloc, child) => TextField(
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 textInputAction: TextInputAction.send,
                 controller: _textController,
-                onSubmitted: _handleSubmitted,
-                onChanged: (_) => _chatMessagesBloc.composing.add(true),
+                onSubmitted: (value) =>
+                    _handleSubmitted(chatMessagesBloc, value),
+                onChanged: (_) => chatMessagesBloc.composing.add(true),
                 decoration:
                     InputDecoration.collapsed(hintText: widget.hintText),
                 focusNode: _focusNode,
               ),
-            ),
-            // TODO fix stream already listened to on hot reload.
+            )),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 4.0),
               // TODO Theming, we'd use a provider or another library to abstract this selection away IRL.
-              child: StreamBuilder(
-                stream: _chatMessagesBloc.isComposing,
-                builder: _buildSendButton,
+              child: Consumer<ChatMessagesBloc>(
+                builder: (context, chatMessagesBloc, child) => StreamBuilder(
+                  stream: chatMessagesBloc.isComposing,
+                  builder: (context, snapshot) =>
+                      _buildSendButton(context, snapshot, chatMessagesBloc),
+                ),
               ),
             )
           ],
@@ -57,32 +57,32 @@ class _ChatInputState extends State<ChatInput> {
     );
   }
 
-  Widget _buildSendButton(context, snapshot) {
+  Widget _buildSendButton(context, snapshot, chatMessagesBloc) {
     bool isComposing = snapshot.hasData && snapshot.data;
     return Theme.of(context).platform == TargetPlatform.iOS
         ? CupertinoButton(
             child: Text('Send'),
             onPressed: isComposing
-                ? () => _handleSubmitted(_textController.text)
+                ? () => _handleSubmitted(chatMessagesBloc, _textController.text)
                 : null,
           )
         : IconButton(
             icon: Icon(Icons.send),
             onPressed: isComposing
-                ? () => _handleSubmitted(_textController.text)
+                ? () => _handleSubmitted(chatMessagesBloc, _textController.text)
                 : null,
           );
   }
 
-  void _handleSubmitted(String text) {
+  void _handleSubmitted(ChatMessagesBloc chatMessagesBloc, String text) {
     // Clear text in box.
     _textController.clear();
 
     // Notify message has been created.
-    _chatMessagesBloc.addMessage.add(text);
+    chatMessagesBloc.addMessage.add(text);
 
     // Notify no longer composing message.
-    _chatMessagesBloc.composing.add(false);
+    chatMessagesBloc.composing.add(false);
 
     _focusNode.requestFocus();
   }
