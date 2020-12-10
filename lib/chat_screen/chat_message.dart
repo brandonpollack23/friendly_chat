@@ -13,7 +13,7 @@ class ChatMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO pull all animation info up to creator.
+    // To make animations selectable just define an enum and switch on it here.
     return SizeTransition(
       sizeFactor:
           CurvedAnimation(parent: animationController, curve: Curves.easeOut),

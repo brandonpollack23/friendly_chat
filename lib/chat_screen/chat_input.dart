@@ -50,7 +50,6 @@ class _ChatInputState extends State<ChatInput> {
             )),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 4.0),
-              // TODO Theming, we'd use a provider or another library to abstract this selection away IRL.
               child: Consumer<ChatMessagesBloc>(
                 builder: (context, chatMessagesBloc, child) => StreamBuilder(
                   stream: chatMessagesBloc.isComposing,

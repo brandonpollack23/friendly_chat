@@ -6,7 +6,6 @@ import 'package:friendly_chat/entities/user.dart';
 import 'package:rxdart/rxdart.dart';
 
 class ChatMessagesBloc {
-  // TODO instead of messages use Entity class that contains user and message.
   final _messages = <Message>[];
 
   final _addMessageController = StreamController<Message>.broadcast();
