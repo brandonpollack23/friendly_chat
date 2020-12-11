@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:friendly_chat/blocs/chat_messages_bloc.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +19,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('FriendlyChat Scaffold Appbar'),
+        title: Text(AppLocalizations.of(context).friendlyChatAppBar),
         elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
       ),
       body: Provider<ChatMessagesBloc>(
@@ -28,7 +29,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           children: [
             MessagesList(),
             Divider(height: 1.0),
-            ChatInput(),
+            ChatInput(
+              hintText: AppLocalizations.of(context).defaultMessageHintText,
+            ),
           ],
         ),
       ),

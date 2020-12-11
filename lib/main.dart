@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'chat_screen/chat_screen.dart';
 
@@ -18,6 +20,17 @@ class FriendlyChatApp extends StatelessWidget {
       theme: defaultTargetPlatform == TargetPlatform.iOS
           ? kIOSTheme
           : kDefaultTheme,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en', ''),
+        const Locale('ja', ''),
+      ],
+      // locale: Locale.fromSubtags(languageCode: "ja"),
     );
   }
 }

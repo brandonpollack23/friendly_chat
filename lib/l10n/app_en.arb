@@ -1,0 +1,13 @@
+{
+  "friendlyChatAppBar": "FriendlyChat Scaffold Appbar",
+  "@friendlyChatAppBar": {
+    "description": "The text that displays in the appbar"
+  },
+
+  "defaultMessageHintText": "Send a message",
+  "@defaultMessageHintText": {
+    "description": "Default hint text for message input"
+  },
+
+  "sendButton": "Send"
+}

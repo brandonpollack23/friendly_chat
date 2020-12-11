@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:friendly_chat/blocs/chat_messages_bloc.dart';
 import 'package:friendly_chat/entities/message.dart';
 import 'package:friendly_chat/entities/user.dart';
@@ -9,7 +10,7 @@ import 'package:provider/provider.dart';
 class ChatInput extends StatefulWidget {
   final hintText;
 
-  ChatInput({this.hintText = 'Send a message'});
+  ChatInput({this.hintText});
 
   @override
   _ChatInputState createState() => _ChatInputState();
@@ -68,7 +69,7 @@ class _ChatInputState extends State<ChatInput> {
     bool isComposing = snapshot.hasData && snapshot.data;
     return Theme.of(context).platform == TargetPlatform.iOS
         ? CupertinoButton(
-            child: Text('Send'),
+            child: Text(AppLocalizations.of(context).sendButton),
             onPressed: isComposing
                 ? () => _handleSubmitted(
                     chatMessagesBloc, _user, _textController.text)
