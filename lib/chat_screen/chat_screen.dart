@@ -21,8 +21,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         title: Text('FriendlyChat Scaffold Appbar'),
         elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
       ),
-      body: Provider(
+      body: Provider<ChatMessagesBloc>(
         create: (context) => ChatMessagesBloc(),
+        dispose: (context, chatMessagesBloc) => chatMessagesBloc.dispose(),
         child: Column(
           children: [
             MessagesList(),
